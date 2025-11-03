@@ -1,0 +1,101 @@
+---
+
+---
+
+<section id="hero">
+  <div class="content">
+    <h1 class="hero-element">Yesid Marín</h1>
+    <h2 class="hero-element">
+      Desarrollador de Software | Arquitecto de Soluciones Digitales
+    </h2>
+    <p class="hero-element">
+      Apasionado por la arquitectura de sistemas y el código limpio. Mi enfoque
+      es transformar requerimientos complejos en soluciones de software
+      mantenibles que impulsan el crecimiento del negocio y aseguran una
+      experiencia de usuario excepcional.
+    </p>
+    <nav class="hero-element">
+      <a
+        href="https://www.linkedin.com/in/yesidmarin7/"
+        target="_blank"
+        rel="noopener noreferrer">LinkedIn</a
+      >
+      <a
+        href="https://github.com/Yesma07"
+        target="_blank"
+        rel="noopener noreferrer">GitHub</a
+      >
+      <a href="/Yesid_Marin_CV.pdf" download>Descargar CV</a>
+    </nav>
+  </div>
+</section>
+
+<style>
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 2rem;
+    padding-top: 80px;
+    box-sizing: border-box;
+  }
+  .content {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  h1 {
+    font-size: 2.5rem;
+    text-shadow:
+      0 0 5px var(--color-accent-magenta),
+      0 0 10px var(--color-accent-magenta);
+  }
+  h2 {
+    font-size: 1rem;
+    color: var(--color-accent-cyan);
+    font-family: var(--font-family-body);
+    letter-spacing: 2px;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  nav a {
+    font-family: var(--font-family-body);
+    color: var(--color-accent-cyan);
+    text-decoration: none;
+    border: 2px solid var(--color-accent-cyan);
+    padding: 0.5rem 1rem;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  nav a:hover {
+    background-color: var(--color-accent-cyan);
+    color: var(--color-bg);
+    box-shadow: 0 0 15px var(--color-accent-cyan);
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  document.addEventListener("astro:page-load", () => {
+    gsap.from(".hero-element", {
+      duration: 0.8,
+      y: 50,
+      opacity: 0,
+      stagger: 0.2,
+      ease: "power3.out",
+    });
+  });
+</script>

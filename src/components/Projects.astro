@@ -1,0 +1,83 @@
+---
+import ProjectCard from "./ProjectCard.astro";
+import type { Props as CardProps } from "./ProjectCard.astro";
+
+const projectsData: CardProps[] = [
+  {
+    title: "MapiAPI",
+    description:
+      "MapiApi es un motor de lanzamiento rápido para proyectos que necesitan despegar desde cero. Funciona como un sistema de navegación inteligente (mini-ORM) que se acopla a cualquier base de datos PostgreSQL, estableciendo instantáneamente una API RESTful segura y canales de comunicación blindados con autenticación JWT. Su misión es simple: permitir que los desarrolladores construyan las estrellas, en lugar de perder tiempo construyendo la plataforma de lanzamiento.",
+    githubUrl: "https://github.com/Yesma07/MapiAPI",
+    tech: ["PHP 8.3", "PostgreSQL", "Redis"],
+  },
+  {
+    title: "The YM-07 Voyage",
+    description:
+      "Esta página no es solo mi carta de presentación, es la nave espacial en la que estás viajando. Diseñada y construida desde cero, esta odisea digital es una demostración de mi pasión por crear experiencias web memorables. Utilizando la velocidad de la luz de Astro, la profundidad del universo 3D de Three.js y las coreografías cinemáticas de GSAP, he creado un portafolio que busca no solo informar, sino también inspirar. Cada animación y cada interacción ha sido diseñada para hacer de este viaje una experiencia única.",
+    githubUrl: "https://github.com/Yesma07/portfolio-retro-80s",
+    tech: ["Astro", "GSAP", "TypeScript", "CSS"],
+  },
+];
+---
+
+<section id="projects">
+  <div class="container">
+    <h2 class="section-title">Proyectos</h2>
+    <div class="projects-grid">
+      {
+        projectsData.map((project) => (
+          <ProjectCard
+            title={project.title}
+            description={project.description}
+            githubUrl={project.githubUrl}
+            tech={project.tech}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  #projects {
+    padding: 4rem 2rem;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    text-shadow: 0 0 5px var(--color-accent-magenta);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener("astro:page-load", () => {
+    gsap.from(".project-card", {
+      scrollTrigger: {
+        trigger: "#projects",
+        start: "top 80%",
+      },
+      duration: 0.8,
+      y: 100,
+      opacity: 0,
+      stagger: 0.2,
+      ease: "power3.out",
+    });
+  });
+</script>

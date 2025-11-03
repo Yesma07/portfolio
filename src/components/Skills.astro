@@ -1,0 +1,124 @@
+---
+interface SkillCategory {
+  title: string;
+  skills: string[];
+}
+
+const skillData: SkillCategory[] = [
+  {
+    title: "Lenguajes",
+    skills: ["PHP", "TypeScript", "JavaScript", "SQL", "Python"]
+  },
+  {
+    title: "Frameworks & Librerías",
+    skills: ["Astro", "Angular", "GSAP"]
+  },
+  {
+    title: "Bases de Datos",
+    skills: ["PostgreSQL", "Redis"]
+  },
+  {
+    title: "Herramientas & Plataformas",
+    skills: ["Git / GitHub", "Docker", "CSS", "RabbitMQ", "k8s", "CI/CD GitLab"]
+  }
+];
+---
+
+<section id="skills">
+  <div class="container">
+    <h2 class="section-title">Constelación de Tecnologías</h2>
+    <div class="skills-grid">
+      {skillData.map(category => (
+        <div class="skill-category">
+          <h3>{category.title}</h3>
+          <ul class="skills-list">
+            <!-- Y otro bucle por cada habilidad dentro de la categoría -->
+            {category.skills.map(skill => (
+              <li class="skill-item">{skill}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  #skills {
+    padding: 4rem 2rem;
+    background-color: rgba(0, 255, 255, 0.05);
+    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    text-shadow: 0 0 5px var(--color-accent-magenta);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .skill-category h3 {
+    font-family: var(--font-family-body);
+    color: var(--color-accent-cyan);
+    border-bottom: 2px solid var(--color-accent-cyan);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .skills-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .skill-item {
+    background-color: transparent;
+    border: 1px solid var(--color-accent-cyan);
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+  }
+
+  .skill-item:hover {
+    background-color: var(--color-accent-cyan);
+    color: var(--color-bg);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--color-accent-cyan);
+  }
+</style>
+
+<script>
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener('astro:page-load', () => {
+        gsap.from(".skill-item", {
+            scrollTrigger: {
+                trigger: "#skills",
+                start: "top 80%",
+            },
+            duration: 0.5,
+            opacity: 0,
+            scale: 0.8,
+            y: 20,
+            stagger: 0.05,
+            ease: "power2.out",
+        });
+    });
+</script>

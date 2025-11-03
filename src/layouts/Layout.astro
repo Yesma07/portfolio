@@ -1,0 +1,96 @@
+---
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.astro";
+import SpaceBackground from "../components/SpaceBackground.astro";
+
+// Añadimos una prop para la descripción
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+
+// URL de la imagen para compartir. Súbela a tu carpeta `public`.
+const imageUrl = new URL("/social-preview.png", Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- BÁSICAS -->
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO AVANZADO Y CANÓNICA -->
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
+    <!-- OPEN GRAPH (para Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Portafolio de Yesid Marín" />
+
+    <!-- TWITTER CARDS -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+
+    <!-- FUENTES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <SpaceBackground />
+    <div class="foreground-container">
+      <Header client:load />
+      <main>
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-bg: #010014;
+    --color-text: #e0ffff;
+    --color-accent-magenta: #ff00ff;
+    --color-accent-cyan: #00ffff;
+    --color-accent-yellow: #ffff00;
+    --font-family-heading: "Press Start 2P", system-ui;
+    --font-family-body: "Source Code Pro", monospace;
+  }
+  html {
+    font-family: var(--font-family-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+  }
+  .foreground-container {
+    position: relative;
+    z-index: 1;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-family-heading);
+    color: var(--color-accent-magenta);
+    margin: 0;
+  }
+</style>

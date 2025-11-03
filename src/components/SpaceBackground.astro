@@ -1,0 +1,349 @@
+---
+
+---
+
+<canvas id="bg-canvas"></canvas>
+<style>
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    outline: none;
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+  import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+
+  gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
+
+  type SceneSettings = {
+    breakpoint: "mobile" | "tablet" | "desktop";
+    spaceshipScale: number;
+    particlesCount: number;
+    planetScales: number[];
+    planetPositions: THREE.Vector3[];
+    flightPath: any;
+    cameraPath: any;
+  };
+
+  function getSceneSettings(width: number): SceneSettings {
+    if (width <= 768) {
+      // --- Móvil ---
+      return {
+        breakpoint: "mobile",
+        spaceshipScale: 1.8,
+        particlesCount: 1500,
+        planetScales: [1.2, 1.0, 0.8, 0.7, 1.4],
+        planetPositions: [
+          new THREE.Vector3(-3, -3, -10),
+          new THREE.Vector3(3, -8, -8),
+          new THREE.Vector3(-2.5, -12, -12),
+          new THREE.Vector3(2, -16, -9),
+          new THREE.Vector3(-1.5, -20, -15),
+        ],
+        flightPath: {
+          start: { pos: { x: -4, y: 1.5, z: 1 }, rot: { y: Math.PI / 2 } },
+          phase1: {
+            pos: { x: 0, y: -6, z: 3, motionPath: [{ x: -2, y: -3, z: 2 }] },
+            rot: { y: 0 },
+          },
+          phase2: {
+            pos: {
+              x: 1,
+              y: -12,
+              z: 2,
+              motionPath: [{ x: 0.5, y: -9, z: 2.5 }],
+            },
+            rot: { y: -0.8 },
+          },
+          phase3: {
+            pos: {
+              x: -1,
+              y: -20,
+              z: 1,
+              motionPath: [{ x: 0, y: -16, z: 1.5 }],
+            },
+            rot: { y: 0.2 },
+          },
+        },
+        cameraPath: {
+          phase1: { pos: { x: -0.5, y: -3, z: 7 } },
+          phase2: { pos: { x: 0.5, y: -11, z: 6 } },
+          phase3: { pos: { x: 0, y: -19, z: 6 } },
+        },
+      };
+    } else if (width <= 1024) {
+      // --- Tablet ---
+      return {
+        breakpoint: "tablet",
+        spaceshipScale: 2.5,
+        particlesCount: 3000,
+        planetScales: [1.3, 1.1, 0.9, 0.8, 1.6],
+        planetPositions: [
+          new THREE.Vector3(-6, -2, -10),
+          new THREE.Vector3(6, -7, -8),
+          new THREE.Vector3(-5, -11, -12),
+          new THREE.Vector3(5, -15, -9),
+          new THREE.Vector3(-4, -19, -15),
+        ],
+        flightPath: {
+          start: { pos: { x: -6, y: 1, z: 0 }, rot: { y: Math.PI / 2 } },
+          phase1: {
+            pos: { x: 0, y: -6, z: 3, motionPath: [{ x: -3, y: -3, z: 2 }] },
+            rot: { y: 0 },
+          },
+          phase2: {
+            pos: { x: 2, y: -12, z: 1, motionPath: [{ x: 1, y: -9, z: 2 }] },
+            rot: { y: -Math.PI / 2.5 },
+          },
+          phase3: {
+            pos: { x: 0, y: -18, z: -2, motionPath: [{ x: 1, y: -15, z: 0 }] },
+            rot: { y: 0 },
+          },
+        },
+        cameraPath: {
+          phase1: { pos: { x: -1, y: -3, z: 6 } },
+          phase2: { pos: { x: 1, y: -11, z: 5 } },
+          phase3: { pos: { x: 0, y: -17, z: 5 } },
+        },
+      };
+    } else {
+      // --- Escritorio ---
+      return {
+        breakpoint: "desktop",
+        spaceshipScale: 3,
+        particlesCount: 5000,
+        planetScales: [1.5, 1.2, 1.0, 0.9, 1.8],
+        planetPositions: [
+          new THREE.Vector3(-8, -2, -10),
+          new THREE.Vector3(8, -6, -8),
+          new THREE.Vector3(-7, -10, -12),
+          new THREE.Vector3(6, -14, -9),
+          new THREE.Vector3(-5, -18, -15),
+        ],
+        flightPath: {
+          start: { pos: { x: -8, y: 1, z: 0 }, rot: { y: Math.PI / 2 } },
+          phase1: {
+            pos: { x: 0, y: -6, z: 3, motionPath: [{ x: -4, y: -3, z: 2 }] },
+            rot: { y: 0 },
+          },
+          phase2: {
+            pos: { x: 2, y: -12, z: 1, motionPath: [{ x: 1, y: -9, z: 2 }] },
+            rot: { y: -Math.PI / 2.5 },
+          },
+          phase3: {
+            pos: { x: 0, y: -18, z: -2, motionPath: [{ x: 1, y: -15, z: 0 }] },
+            rot: { y: 0 },
+          },
+        },
+        cameraPath: {
+          phase1: { pos: { x: -1, y: -3, z: 6 } },
+          phase2: { pos: { x: 1, y: -11, z: 5 } },
+          phase3: { pos: { x: 0, y: -17, z: 5 } },
+        },
+      };
+    }
+  }
+
+  let settings = getSceneSettings(window.innerWidth);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.z = 5;
+  const canvas = document.getElementById("bg-canvas") as HTMLCanvasElement;
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: settings.breakpoint !== "mobile",
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(
+    settings.breakpoint === "mobile" ? 1 : Math.min(window.devicePixelRatio, 2)
+  );
+
+  // --- LUCES Y ESTRELLAS ---
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 4.5);
+  directionalLight.position.set(1.5, 1, 2);
+  scene.add(directionalLight);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+  scene.add(ambientLight);
+  const starField = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute(
+      "position",
+      new THREE.BufferAttribute(
+        new Float32Array(
+          Array.from(
+            { length: settings.particlesCount * 3 },
+            () => (Math.random() - 0.5) * 100
+          )
+        ),
+        3
+      )
+    ),
+    new THREE.PointsMaterial({
+      size: 0.025,
+      color: 0xffffff,
+      transparent: true,
+    })
+  );
+  scene.add(starField);
+
+  // --- PLANETAS ---
+  const textureLoader = new THREE.TextureLoader();
+  const planetTextures = [
+    "planet1.jpg",
+    "planet2.jpg",
+    "planet3.jpg",
+    "planet4.jpg",
+    "planet5.jpg",
+  ];
+  const planetMeshes = planetTextures.map((tex, i) => {
+    const planetData = settings.planetPositions[i];
+    const scale = settings.planetScales[i];
+    const planet = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 32, 32),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load(`/textures/${tex}`),
+        transparent: true,
+        opacity: 0.5,
+      })
+    );
+    planet.position.copy(planetData);
+    planet.scale.set(scale, scale, scale);
+    scene.add(planet);
+    return planet;
+  });
+
+  // --- NAVE ---
+  const loader = new GLTFLoader();
+  let spaceship: THREE.Group;
+  loader.load("/models/spaceship.glb", (gltf) => {
+    spaceship = gltf.scene;
+    spaceship.scale.set(
+      settings.spaceshipScale,
+      settings.spaceshipScale,
+      settings.spaceshipScale
+    );
+    scene.add(spaceship);
+    createScrollAnimation(settings);
+  });
+
+  let scrollTimeline: gsap.core.Timeline | null = null;
+  function createScrollAnimation(currentSettings: SceneSettings) {
+    if (scrollTimeline) scrollTimeline.kill();
+
+    gsap.set(spaceship.position, currentSettings.flightPath.start.pos);
+    gsap.set(spaceship.rotation, currentSettings.flightPath.start.rot);
+
+    scrollTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.5,
+      },
+    });
+
+    scrollTimeline
+      .to(
+        spaceship.position,
+        { ...currentSettings.flightPath.phase1.pos, ease: "power1.inOut" },
+        "start"
+      )
+      .to(spaceship.rotation, currentSettings.flightPath.phase1.rot, "start")
+      .to(camera.position, currentSettings.cameraPath.phase1.pos, "start")
+      .to(
+        planetMeshes[0].position,
+        { z: planetMeshes[0].position.z + 12 },
+        "start"
+      )
+      .to(
+        planetMeshes[1].position,
+        { z: planetMeshes[1].position.z + 10 },
+        "start"
+      )
+
+      .to(
+        spaceship.position,
+        { ...currentSettings.flightPath.phase2.pos, ease: "power1.inOut" },
+        "phase2"
+      )
+      .to(spaceship.rotation, currentSettings.flightPath.phase2.rot, "phase2")
+      .to(camera.position, currentSettings.cameraPath.phase2.pos, "phase2")
+      .to(
+        planetMeshes[2].position,
+        { z: planetMeshes[2].position.z + 11 },
+        "phase2"
+      )
+      .to(
+        planetMeshes[3].position,
+        { z: planetMeshes[3].position.z + 9 },
+        "phase2"
+      )
+
+      .to(
+        spaceship.position,
+        { ...currentSettings.flightPath.phase3.pos, ease: "power1.inOut" },
+        "phase3"
+      )
+      .to(spaceship.rotation, currentSettings.flightPath.phase3.rot, "phase3")
+      .to(camera.position, currentSettings.cameraPath.phase3.pos, "phase3")
+      .to(
+        planetMeshes[4].position,
+        { z: planetMeshes[4].position.z + 11 },
+        "phase3"
+      );
+  }
+
+  // --- BUCLE DE ANIMACIÓN ---
+  const clock = new THREE.Clock();
+  const animate = () => {
+    const elapsedTime = clock.getElapsedTime();
+    starField.rotation.y = elapsedTime * 0.05;
+    planetMeshes.forEach(
+      (planet, i) => (planet.rotation.y = elapsedTime * (0.1 - i * 0.01))
+    );
+    renderer.render(scene, camera);
+    window.requestAnimationFrame(animate);
+  };
+  animate();
+
+  window.addEventListener("resize", () => {
+    const newSettings = getSceneSettings(window.innerWidth);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setPixelRatio(
+      newSettings.breakpoint === "mobile"
+        ? 1
+        : Math.min(window.devicePixelRatio, 2)
+    );
+    if (newSettings.breakpoint !== settings.breakpoint) {
+      settings = newSettings;
+
+      spaceship.scale.set(
+        settings.spaceshipScale,
+        settings.spaceshipScale,
+        settings.spaceshipScale
+      );
+      planetMeshes.forEach((planet, i) => {
+        planet.position.copy(settings.planetPositions[i]);
+        const scale = settings.planetScales[i];
+        planet.scale.set(scale, scale, scale);
+      });
+
+      createScrollAnimation(settings);
+    }
+  });
+</script>

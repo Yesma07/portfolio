@@ -1,0 +1,146 @@
+---
+const experienceData = [
+  {
+    role: "Desarrollador Full-Stack",
+    company: "Delthac 1 Seguridad",
+    date: "Agosto 2023 - Presente",
+    achievements: [
+      "Lideré el desarrollo de la refactorización del Software de la compañía actualizandolo con tecnologías modernas.",
+      "Implementé un sistema de caché con Redis que redujo los tiempos de carga en 300ms.",
+      "Implementé RabbitMQ para procesar tareas en segundo plano, reduciendo los tiempos de respuesta de la API en un 90% (de 5s a <500ms).",
+      "Lideré la modernización del ciclo de desarrollo implementando entornos dockerizados y un pipeline de CI/CD con GitLab y Kubernetes.",
+    ],
+  },
+];
+---
+
+<section id="experience">
+  <div class="container">
+    <h2 class="section-title">Bitácora de Vuelo</h2>
+    <div class="timeline">
+      {
+        experienceData.map((job) => (
+          <article class="timeline-item">
+            <h3 class="job-role">{job.role}</h3>
+            <p class="job-meta">
+              {job.company} | {job.date}
+            </p>
+            <ul class="job-achievements">
+              {job.achievements.map((achievement) => (
+                <li>{achievement}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  #experience {
+    padding: 4rem 2rem;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-left: 3rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 1.5rem;
+    bottom: 0;
+    width: 2px;
+    background: rgba(0, 255, 255, 0.2);
+  }
+
+  .timeline-item {
+    position: relative;
+    border: 2px solid var(--color-accent-cyan);
+    padding: 1.5rem;
+    background-color: rgba(0, 255, 255, 0.05);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.75rem;
+    top: 1.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-accent-magenta);
+    border: 2px solid var(--color-bg);
+    box-shadow: 0 0 15px var(--color-accent-magenta);
+  }
+  .timeline-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+  }
+
+  .job-role {
+    color: var(--color-text);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+  .job-meta {
+    color: var(--color-accent-cyan);
+    margin: 0 0 1rem 0;
+  }
+  .job-achievements {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .job-achievements li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  .job-achievements li::before {
+    content: ">>";
+    position: absolute;
+    left: 0;
+    color: var(--color-accent-magenta);
+    font-family: var(--font-family-body);
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener("astro:page-load", () => {
+    gsap.from(".timeline-item", {
+      scrollTrigger: {
+        trigger: "#experience",
+        start: "top 80%",
+        toggleActions: "play none none none"
+      },
+      duration: 0.8,
+      opacity: 0,
+      x: -30,
+      filter: 'blur(10px)',
+      scale: 0.98,
+      stagger: 0.3,
+      ease: "power3.out",
+    });
+  });
+</script>
